@@ -1,10 +1,12 @@
 package io.egg.minigames.instances;
 
 import com.google.common.collect.HashBiMap;
-import io.egg.minigames.generators.SuperflatWorldGenerator;
+import io.egg.minigames.generators.VoidWorldGenerator;
+import io.egg.minigames.loading.DatabaseWorldLoader;
 import io.egg.minigames.profiles.DefaultProfileDelegate;
 import io.egg.minigames.profiles.ProfileData;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
 
@@ -24,19 +26,28 @@ public class InstanceManager {
         return instancesByName.inverse().get(i);
     }
 
+
+    public ProfiledInstance getProfile(String name) {
+        return instances.get(name);
+    }
+    public ProfiledInstance getProfile(InstanceContainer c) {
+        return instances.get(instanceName(c));
+    }
     public void createLobby() {
         InstanceContainer ic = handle.createInstanceContainer();
 
-        ic.setChunkGenerator(new SuperflatWorldGenerator(Block.GRASS_BLOCK));
-        ProfileData pd = new ProfileData("lobby", false);
-        ProfiledInstance pi = new ProfiledInstance(ic, new DefaultProfileDelegate(ic, "lobby"), null);
-
+        ic.setChunkGenerator(new VoidWorldGenerator(Block.GRASS_BLOCK));
+        ProfileData pd = new ProfileData("lobby", true);
+        ProfiledInstance pi = new ProfiledInstance(ic, new DefaultProfileDelegate(ic, "lobby"), pd);
         instances.put("lobby", pi);
         instancesByName.put("lobby", ic);
+        ic.setChunkLoader(new DatabaseWorldLoader(ic));
+        ic.getWorldBorder().setCenter(0, 0);
+        ic.getWorldBorder().setDiameter(51);
     }
 
-    public static InstanceManager getInstance() {
-        return inst;
+    public Instance getInstance(String name) {
+        return instancesByName.get(name);
     }
     public InstanceManager() {
         handle = MinecraftServer.getInstanceManager();

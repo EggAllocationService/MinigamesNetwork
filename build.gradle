@@ -18,6 +18,7 @@ repositories {
 
 dependencies {
     compile 'com.github.Minestom:Minestom:-SNAPSHOT'
+    compile 'org.mongodb:mongodb-driver-sync:4.2.0'
 }
 
 test {

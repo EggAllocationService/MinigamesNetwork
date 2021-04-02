@@ -16,4 +16,8 @@ public class ProfiledInstance {
         pd = ppd;
         p = a;
     }
+
+    public ProfileData getProfileData() {
+        return pd;
+    }
 }

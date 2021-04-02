@@ -26,12 +26,14 @@ public class DefaultProfileDelegate {
         Method[] ms = this.getClass().getMethods();
         for (Method m : ms) {
             if (m.isAnnotationPresent(EventHandler.class)) {
+                System.out.println("Registering method " + m.getName() + " on " + this.getClass().getName());
                 // has thingy
                 Parameter[] t = m.getParameters();
                 if (t.length == 0) continue;
                 Class eventClass = t[0].getClass();
                 if (eventClass.getSuperclass() != Event.class) return;
                 instance.addEventCallback((Class<Event>) eventClass, event -> {
+                    System.out.println("invoking method " + m.getName() + " on " + this.getClass().getName());
                     try {
                         m.invoke(this, event);
                     } catch (IllegalAccessException | InvocationTargetException e) {
