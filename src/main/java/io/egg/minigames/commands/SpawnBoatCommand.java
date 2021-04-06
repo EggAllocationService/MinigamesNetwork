@@ -16,6 +16,7 @@ public class SpawnBoatCommand extends Command {
                 EntityCreature horror = new MonsterBoatCreature();
                 horror.setInstance(p.getInstance(), p.getPosition());
                 horror.setTarget(p);
+
             }
         });
     }

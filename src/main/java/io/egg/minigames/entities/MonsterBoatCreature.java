@@ -26,10 +26,9 @@ public class MonsterBoatCreature extends EntityCreature {
     public MonsterBoatCreature() {
         super(EntityType.BOAT);
         addAIGroup(new EntityAIGroupBuilder()
-                .addGoalSelector(new MeleeAttackGoal(this, 1, 4, TimeUnit.SECOND))
                 .addGoalSelector(new FollowTargetGoal(this, new UpdateOption(1, TimeUnit.SECOND)))
                 .addGoalSelector(new RandomStrollGoal(this, 5))
-                .addTargetSelector(new ClosestEntityTarget(this, 40, Player.class))
+                .addTargetSelector(new ClosestEntityTarget(this, 20, Player.class))
                 .build()
         );
 

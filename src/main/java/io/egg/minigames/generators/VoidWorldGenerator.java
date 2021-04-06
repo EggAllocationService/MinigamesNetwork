@@ -27,7 +27,7 @@ public class VoidWorldGenerator implements ChunkGenerator {
             .fogColor(0x15d6ac)
             .skyColor(0x15d6ac)
             //.grassColor(0x21cc2c)
-            .grassColor(0x6bffd3)
+            .grassColor(0x9bffe6)
             .waterColor(0x02c99b)
             .waterFogColor(0x02c99b)
             //.foliageColor(0xffc2fb)
@@ -45,9 +45,9 @@ public class VoidWorldGenerator implements ChunkGenerator {
             .scale(0.05F)
             .effects(DEFAULT_EFFECTS)
             .build();
-    Block bl;
-    public VoidWorldGenerator(Block b) {
-        bl = b;
+    Biome biome;
+    public VoidWorldGenerator(Biome bb) {
+        biome = bb;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class VoidWorldGenerator implements ChunkGenerator {
 
     @Override
     public void fillBiomes(@NotNull Biome[] biomes, int chunkX, int chunkZ) {
-        Arrays.fill(biomes, LOBBY);
+        Arrays.fill(biomes, biome);
 
     }
 

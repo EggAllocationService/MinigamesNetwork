@@ -15,31 +15,28 @@ import java.util.Collection;
 
 public class DatabaseWorldLoader implements IChunkLoader {
     InstanceContainer i;
-    public DatabaseWorldLoader(InstanceContainer b) {
+    String worldName;
+    public DatabaseWorldLoader(InstanceContainer b, String world) {
         i = b;
+        worldName = world;
     }
 
     @Override
     public boolean loadChunk(@NotNull Instance instance, int chunkX, int chunkZ, @Nullable ChunkCallback callback) {
-        ProfiledInstance iData;
-        try {
-             iData = InstanceManager.get().getProfile(i);
-        } catch(Exception e) {
 
-            return false;
-        }
 
-        String world = iData.getProfileData().mapName;
-        if (world == null) {
-            // This is not managed by the InstanceManager, so we can't load chunks
-            return false;
-        }
-        World w = WorldManager.getWorld(world);
+
+        World w = WorldManager.getWorld(worldName);
+
         WorldChunk c = w.getChunkAt(chunkX, chunkZ);
         if (c == null) {
             // chunk has never been loaded
             return false;
+
         } else {
+            if (!worldName.equals("lobby")) {
+                System.out.println("loadChunk " + worldName + " " + getChunkKey(chunkX, chunkZ));
+            }
             //chunk has been loaded, lets have fun!
             BinaryReader b = new BinaryReader(c.data);
             Chunk chunk = (i).getChunkSupplier().createChunk(null, chunkX, chunkZ);
@@ -51,16 +48,8 @@ public class DatabaseWorldLoader implements IChunkLoader {
 
     @Override
     public void saveChunk(@NotNull Chunk chunk, @Nullable Runnable callback) {
-        ProfiledInstance iData = InstanceManager.get().getProfile(i);
 
-        String world = iData.getProfileData().mapName;
-        if (!iData.getProfileData().saveMap) return;
-        if (world == null) {
-            // This is not managed by the InstanceManager, so we can't load chunks
-
-            return;
-        }
-        World w = WorldManager.getWorld(world);
+        World w = WorldManager.getWorld(worldName);
         if (w == null) {
             return; // shits really fucked like REALLY FUCKED
         }

@@ -35,7 +35,7 @@ public class GamemodeCommand extends Command {
         setArgumentCallback(this::gameModeCallback, mode);
 
         addSyntax(this::executeOnSelf, mode);
-        addSyntax(this::executeOnOther, player, mode);
+        addSyntax(this::executeOnOther, mode, player);
     }
 
     private void usage(CommandSender sender, CommandContext context) {

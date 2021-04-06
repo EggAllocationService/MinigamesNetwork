@@ -2,6 +2,7 @@ package io.egg.minigames.tasks;
 
 import com.google.common.collect.Collections2;
 import io.egg.minigames.instances.InstanceManager;
+import io.egg.minigames.instances.ProfiledInstance;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.minestom.server.MinecraftServer;
@@ -11,14 +12,19 @@ import net.minestom.server.instance.InstanceContainer;
 public class InstanceNameTask implements Runnable{
     @Override
     public void run() {
+
         for (Player p : MinecraftServer.getConnectionManager().getOnlinePlayers()) {
-            String s = InstanceManager.get().instanceName((InstanceContainer) p.getInstance());
+            ProfiledInstance s = InstanceManager.get().getProfile((InstanceContainer) p.getInstance());
             if (s == null) continue;
-            Component t = Component.text("You are playing on instance ")
-                    .color(TextColor.color(0x23bbf3))
+            Component t = Component.text("You are playing ", TextColor.color(0x23bbf3))
                     .append(
-                            Component.text(s)
-                            .color(TextColor.color(0x8a329b))
+                            Component.text(s.getDelegate().getName(), TextColor.color(0x8a329b))
+                    )
+                    .append(
+                            Component.text(" on instance ", TextColor.color(0x23bbf3))
+                    )
+                    .append(
+                            Component.text(s.getName(),TextColor.color(0x8a329b))
 
                     );
             p.sendActionBar(t);

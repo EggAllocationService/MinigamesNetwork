@@ -1,10 +1,14 @@
 package io.egg.minigames.loading;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import io.egg.minigames.database.Database;
 import org.bson.codecs.pojo.annotations.BsonId;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -52,6 +56,29 @@ public class World {
         return c;
     }
 
+    public WorldChunk getChunkKey(String chunkId) {
+        if (cache.containsKey(chunkId)) {
+            return cache.get(chunkId);
+        }
+        WorldChunk c = Database.getInstance().worldChunks.find(eq("_id", chunkId)).first();
+        assert c != null;
+        byte[] compressed = c.data.clone();
+        c.data = new byte[c.rawSize];
+
+
+        Inflater i = new Inflater();
+        i.setInput(compressed);
+        try {
+            i.inflate(c.data);
+            i.end();
+        } catch (DataFormatException e) {
+            e.printStackTrace();
+            return null;
+        }
+        cache.put(chunkId, c);
+        return c;
+    }
+
     public void saveChunk(int x, int z, byte[] da) {
         Deflater compressor = new Deflater();
         compressor.setInput(da);
@@ -74,10 +101,13 @@ public class World {
             wc.world = this.id;
             wc.id = id;
             wc.rawSize = da.length;
-            // put WorldChunk into local cache
-            cache.put(id, wc);
+
             // put WorldChunk into database
             Database.getInstance().worldChunks.insertOne(wc);
+            // put WorldChunk into local cache
+
+            cache.put(id, wc);
+            cache.get(id).data = da;
             // Update database listing for this world
             Database.getInstance().worlds.updateOne(eq("_id", this.id), combine(
                     set("chunks." + getChunkKey(x, z), id)
@@ -102,5 +132,54 @@ public class World {
     }
     private static String getChunkKey(int chunkX, int chunkZ) {
         return chunkX + "~" + chunkZ;
+    }
+
+
+    private class ExportThread extends Thread {
+        World world;
+        Consumer<byte[]> call;
+        ExportThread(World w, Consumer<byte[]> callback) {
+            super();
+            world = w;
+            call = callback;
+        }
+
+        @Override
+        public void run() {
+            byte[] data = world.exportBytes();
+            call.accept(data);
+        }
+    }
+
+    public void export(Consumer<byte[]> callback) {
+        new ExportThread(this, callback).start();
+    }
+
+
+    protected byte[] exportBytes() {
+        ByteArrayDataOutput bb = ByteStreams.newDataOutput();
+        bb.writeInt(chunks.size());
+        for (String id : chunks.values()) {
+            try {
+                byte[] chunk = getChunkKey(id).encode();
+                bb.writeInt(chunk.length);
+                bb.write(chunk);
+            } catch (NullPointerException e) {
+                System.out.println("Error encoding chunk " + id);
+            }
+        }
+        byte[] uncompressed = bb.toByteArray();
+        Deflater deflater = new Deflater(Deflater.DEFLATED);
+        deflater.setInput(uncompressed);
+        deflater.finished();
+        byte[] tmp = new byte[uncompressed.length];
+        int compressedSize = deflater.deflate(tmp);
+        byte[] compresssed = new byte[compressedSize];
+        System.arraycopy(tmp, 0, compresssed, 0, compressedSize);
+
+        ByteArrayDataOutput bbb = ByteStreams.newDataOutput();
+        bbb.writeInt(uncompressed.length);
+        bbb.write(compresssed);
+        return bbb.toByteArray();
     }
 }

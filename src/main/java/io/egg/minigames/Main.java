@@ -1,9 +1,15 @@
 package io.egg.minigames;
 
+import io.egg.minigames.blocks.KeystoneBlock;
+import io.egg.minigames.blocks.OptionalBlock;
+import io.egg.minigames.blocks.spawn.SpawnLocationBlock;
 import io.egg.minigames.commands.*;
 import io.egg.minigames.database.Database;
 import io.egg.minigames.generators.VoidWorldGenerator;
 import io.egg.minigames.instances.InstanceManager;
+import io.egg.minigames.placementrule.StairsPlacementRule;
+import io.egg.minigames.profiles.delegates.LobbyProfileDelegate;
+import io.egg.minigames.skins.SkinManager;
 import io.egg.minigames.tasks.InstanceNameTask;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -15,12 +21,15 @@ import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.event.player.PlayerLoginEvent;
+import net.minestom.server.event.player.PlayerSkinInitEvent;
+import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.server.ping.ResponseData;
 import net.minestom.server.ping.ResponseDataConsumer;
 import net.minestom.server.utils.Position;
 import net.minestom.server.utils.time.TimeUnit;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 public class Main {
@@ -30,17 +39,38 @@ public class Main {
         //InstanceContainer mainInstance = MinecraftServer.getInstanceManager().createInstanceContainer();
        // mainInstance.setChunkGenerator(new SuperflatWorldGenerator(Block.STONE));
         MinecraftServer.setBrandName("Cabot");
+
         InstanceManager.init();
         Database.init();
-        InstanceManager.get().createLobby();
+        //InstanceManager.get().createLobby();
         MinecraftServer.getCommandManager().register(new SaveCommand());
         MinecraftServer.getSchedulerManager().buildTask(new InstanceNameTask()).repeat(100, TimeUnit.MILLISECOND).schedule();
+        MinecraftServer.getSchedulerManager().buildTask(() -> InstanceManager.get().tick()).repeat(1, TimeUnit.TICK).schedule();
         MinecraftServer.getBiomeManager().addBiome(VoidWorldGenerator.LOBBY);
         MinecraftServer.getCommandManager().register(new StopCommand());
         MinecraftServer.getCommandManager().register(new SpawnBoatCommand());
         MinecraftServer.getCommandManager().register(new GamemodeCommand());
         MinecraftServer.getCommandManager().register(new DisguiseCommand());
+        MinecraftServer.getCommandManager().register(new SwitchInstanceCommand());
+        MinecraftServer.getCommandManager().register(new EditMapCommand());
+        MinecraftServer.getBlockManager().registerCustomBlock(new KeystoneBlock());
+        MinecraftServer.getBlockManager().registerCustomBlock(new OptionalBlock());
+        MinecraftServer.getBlockManager().registerCustomBlock(new SpawnLocationBlock());
+        MinecraftServer.getCommandManager().register(new CreateBlockhuntCommand());
+        MinecraftServer.getCommandManager().register(new ExportWorldCommand());
+        MinecraftServer.setChunkViewDistance(12);
 
+        // placement rules
+        MinecraftServer.getBlockManager().registerBlockPlacementRule(new StairsPlacementRule(Block.QUARTZ_STAIRS));
+        MinecraftServer.getBlockManager().registerBlockPlacementRule(new StairsPlacementRule(Block.RED_SANDSTONE_STAIRS));
+        MinecraftServer.getBlockManager().registerBlockPlacementRule(new StairsPlacementRule(Block.SANDSTONE_STAIRS));
+
+        try {
+            InstanceManager.get().spawn("lobby", new LobbyProfileDelegate());
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            e.printStackTrace();
+            return;
+        }
 
         GlobalEventHandler globalEventHandler = MinecraftServer.getGlobalEventHandler();
         globalEventHandler.addEventCallback(PlayerLoginEvent.class, event -> {
@@ -48,26 +78,21 @@ public class Main {
             event.setSpawningInstance(InstanceManager.get().getInstance("lobby"));
             player.setGameMode(GameMode.CREATIVE);
             player.setAllowFlying(true);
-            player.setRespawnPoint(new Position(0, 65, 0));
+            player.setRespawnPoint(new Position(0.5, 65, 0.5));
         });
-        globalEventHandler.addEventCallback(EntityAttackEvent.class, event -> {
-            if (event.getTarget() instanceof LivingEntity) {
-                LivingEntity l = (LivingEntity) event.getTarget();
-                l.damage(DamageType.fromEntity(event.getEntity()), 2);
-            }
+        globalEventHandler.addEventCallback(PlayerSkinInitEvent.class, event -> {
+            event.setSkin(SkinManager.getName(event.getPlayer().getUsername()));
         });
 
 
 
-        m.start("0.0.0.0", 25565, new ResponseDataConsumer() {
-            @Override
-            public void accept(PlayerConnection playerConnection, ResponseData responseData) {
-                responseData.setOnline(69);
-                responseData.setMaxPlayer(420);
-                responseData.addPlayer("Notch", UUID.randomUUID());
-                responseData.addPlayer("Sam's Ego", UUID.randomUUID());
-                responseData.setDescription(Component.text("Testing Server Instance", TextColor.color(0xc13f6f)));
-            }
+
+        m.start("0.0.0.0", 25565, (playerConnection, responseData) -> {
+            responseData.setOnline(69);
+            responseData.setMaxPlayer(420);
+            responseData.addPlayer("Notch", UUID.randomUUID());
+            responseData.addPlayer("Sam's Ego", UUID.randomUUID());
+            responseData.setDescription(Component.text("Testing Server Instance", TextColor.color(0xc13f6f)));
         });
     }
 }
