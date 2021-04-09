@@ -1,7 +1,5 @@
 package io.egg.minigames.loading;
 
-import io.egg.minigames.instances.InstanceManager;
-import io.egg.minigames.instances.ProfiledInstance;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.IChunkLoader;
 import net.minestom.server.instance.Instance;
@@ -10,8 +8,6 @@ import net.minestom.server.utils.binary.BinaryReader;
 import net.minestom.server.utils.chunk.ChunkCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
 
 public class DatabaseWorldLoader implements IChunkLoader {
     InstanceContainer i;
@@ -23,9 +19,6 @@ public class DatabaseWorldLoader implements IChunkLoader {
 
     @Override
     public boolean loadChunk(@NotNull Instance instance, int chunkX, int chunkZ, @Nullable ChunkCallback callback) {
-
-
-
         World w = WorldManager.getWorld(worldName);
 
         WorldChunk c = w.getChunkAt(chunkX, chunkZ);
@@ -34,9 +27,6 @@ public class DatabaseWorldLoader implements IChunkLoader {
             return false;
 
         } else {
-            if (!worldName.equals("lobby")) {
-                System.out.println("loadChunk " + worldName + " " + getChunkKey(chunkX, chunkZ));
-            }
             //chunk has been loaded, lets have fun!
             BinaryReader b = new BinaryReader(c.data);
             Chunk chunk = (i).getChunkSupplier().createChunk(null, chunkX, chunkZ);

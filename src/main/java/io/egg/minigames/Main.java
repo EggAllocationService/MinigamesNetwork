@@ -23,9 +23,6 @@ import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.event.player.PlayerLoginEvent;
 import net.minestom.server.event.player.PlayerSkinInitEvent;
 import net.minestom.server.instance.block.Block;
-import net.minestom.server.network.player.PlayerConnection;
-import net.minestom.server.ping.ResponseData;
-import net.minestom.server.ping.ResponseDataConsumer;
 import net.minestom.server.utils.Position;
 import net.minestom.server.utils.time.TimeUnit;
 
@@ -36,13 +33,10 @@ public class Main {
 
     public static void main(String[] args) {
         MinecraftServer m = MinecraftServer.init();
-        //InstanceContainer mainInstance = MinecraftServer.getInstanceManager().createInstanceContainer();
-       // mainInstance.setChunkGenerator(new SuperflatWorldGenerator(Block.STONE));
         MinecraftServer.setBrandName("Cabot");
 
         InstanceManager.init();
         Database.init();
-        //InstanceManager.get().createLobby();
         MinecraftServer.getCommandManager().register(new SaveCommand());
         MinecraftServer.getSchedulerManager().buildTask(new InstanceNameTask()).repeat(100, TimeUnit.MILLISECOND).schedule();
         MinecraftServer.getSchedulerManager().buildTask(() -> InstanceManager.get().tick()).repeat(1, TimeUnit.TICK).schedule();
@@ -58,7 +52,7 @@ public class Main {
         MinecraftServer.getBlockManager().registerCustomBlock(new SpawnLocationBlock());
         MinecraftServer.getCommandManager().register(new CreateBlockhuntCommand());
         MinecraftServer.getCommandManager().register(new ExportWorldCommand());
-        MinecraftServer.setChunkViewDistance(12);
+        MinecraftServer.setChunkViewDistance(8);
 
         // placement rules
         MinecraftServer.getBlockManager().registerBlockPlacementRule(new StairsPlacementRule(Block.QUARTZ_STAIRS));

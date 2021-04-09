@@ -41,7 +41,7 @@ public class MonsterBoatCreature extends EntityCreature {
 
         addEventCallback(EntityDamageEvent.class, event -> {
            setVelocity(getVelocity().add(0, 1,0));
-            if (getHealth() > 0) {
+            if (getHealth() < 0) {
                 remove();
             }
         });

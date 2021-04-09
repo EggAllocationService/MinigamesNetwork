@@ -2,10 +2,9 @@ package io.egg.minigames.games;
 
 import io.egg.minigames.blocks.spawn.SpawnLocationManager;
 import io.egg.minigames.loading.WorldManager;
-import io.egg.minigames.profiles.DefaultProfileDelegate;
-import io.egg.minigames.profiles.EventHandler;
-import io.egg.minigames.profiles.PlayerJoinProfileEvent;
-import io.egg.minigames.profiles.ProfileData;
+import io.egg.minigames.profiles.*;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.utils.BlockPosition;
 
@@ -28,7 +27,13 @@ public class BasicMinigameDelegate extends DefaultProfileDelegate {
             }
         }
         System.out.println(id);
+        defaultBar.name(Component.text("Waiting For Players", TextColor.color(0x341bad)));
+        defaultBar.
 
+    }
+
+    public int getMaxPlayers() {
+        return 8;
     }
 
     @EventHandler
@@ -45,6 +50,12 @@ public class BasicMinigameDelegate extends DefaultProfileDelegate {
             return;
         }
         e.setJoinPos(spawnLocation.toPosition().add(0.5, 1, 0.5));
+        e.getP().showBossBar(defaultBar);
+
+    }
+    @EventHandler
+    public void leave(PlayerLeaveProfileEvent e) {
+
     }
 
     @Override
