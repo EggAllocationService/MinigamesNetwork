@@ -28,7 +28,7 @@ public class BasicMinigameDelegate extends DefaultProfileDelegate {
         }
         System.out.println(id);
         defaultBar.name(Component.text("Waiting For Players", TextColor.color(0x341bad)));
-        defaultBar.
+        defaultBar.progress(0.0f);
 
     }
 
@@ -51,6 +51,7 @@ public class BasicMinigameDelegate extends DefaultProfileDelegate {
         }
         e.setJoinPos(spawnLocation.toPosition().add(0.5, 1, 0.5));
         e.getP().showBossBar(defaultBar);
+        defaultBar.progress((getInstance().getPlayers().size() + 1) / getMaxPlayers());
 
     }
     @EventHandler
