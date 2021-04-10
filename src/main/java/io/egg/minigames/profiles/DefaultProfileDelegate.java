@@ -29,7 +29,7 @@ public abstract class DefaultProfileDelegate {
                 Parameter[] t = m.getParameters();
                 if (t.length != 1) continue;
                 Class<?> eventClass = t[0].getType();
-               if (eventClass.getSuperclass() != Event.class) return;
+
                 System.out.println("Method " + m.getName() + " is listening for event " + eventClass.getName());
                 instance.addEventCallback((Class<Event>) eventClass, event -> {
                     //System.out.println("invoking method " + m.getName() + " on " + this.getClass().getName());

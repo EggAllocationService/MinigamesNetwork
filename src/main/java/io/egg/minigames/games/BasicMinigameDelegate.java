@@ -1,12 +1,14 @@
 package io.egg.minigames.games;
 
 import io.egg.minigames.blocks.spawn.SpawnLocationManager;
+import io.egg.minigames.generators.VoidWorldGenerator;
 import io.egg.minigames.loading.WorldManager;
 import io.egg.minigames.profiles.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.utils.BlockPosition;
+import net.minestom.server.world.biomes.Biome;
 
 public class BasicMinigameDelegate extends DefaultProfileDelegate {
     String map;
@@ -18,15 +20,7 @@ public class BasicMinigameDelegate extends DefaultProfileDelegate {
 
     @Override
     public void setupInstance(Instance i) {
-
-        int id = 0;
-        for (int cx = -5; cx < 6; cx++) {
-            for (int cz = -5; cz < 6; cz++) {
-                i.loadChunk(cx, cz);
-                id++;
-            }
-        }
-        System.out.println(id);
+        i.setChunkGenerator(new VoidWorldGenerator(Biome.PLAINS));
         defaultBar.name(Component.text("Waiting For Players", TextColor.color(0x341bad)));
         defaultBar.progress(0.0f);
 
