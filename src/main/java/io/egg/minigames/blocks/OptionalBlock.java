@@ -1,11 +1,15 @@
 package io.egg.minigames.blocks;
 
+import io.egg.minigames.instances.InstanceManager;
+import io.egg.minigames.instances.ProfiledInstance;
+import io.egg.minigames.profiles.delegates.MapEditorDelegate;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.data.Data;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
+import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.block.CustomBlock;
 import net.minestom.server.network.packet.server.play.ParticlePacket;
@@ -34,7 +38,20 @@ public class OptionalBlock extends CustomBlock {
 
     @Override
     public void update(@NotNull Instance instance, @NotNull BlockPosition blockPosition, @Nullable Data data) {
-
+        try {
+            ProfiledInstance pp = InstanceManager.get().getProfile((InstanceContainer) instance);
+            if (!(pp.getDelegate() instanceof MapEditorDelegate)) {
+                Block b;
+                if (ThreadLocalRandom.current().nextFloat() < 0.5) {
+                    b = Block.fromStateId((short) data.get("block"));
+                } else {
+                    b = Block.AIR;
+                }
+                instance.setBlock(blockPosition, b);
+            }
+        } catch (Exception e) {
+            // not a valid htingy
+        }
 
         for (double x = 0; x <= 1; x+= 0.5) {
             for (double y = 0; y <= 1; y+=0.5) {
