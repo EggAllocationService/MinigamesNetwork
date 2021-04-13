@@ -1,5 +1,8 @@
 package io.egg.minigames.games;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import io.egg.minigames.profiles.EventHandler;
 import io.egg.minigames.profiles.PlayerJoinProfileEvent;
 import net.kyori.adventure.text.Component;
@@ -11,6 +14,7 @@ import net.minestom.server.event.player.PlayerHandAnimationEvent;
 import net.minestom.server.event.player.PlayerStartDiggingEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.network.packet.server.play.DestroyEntitiesPacket;
 
 public class BlockHuntGamemodeDelegate extends BasicMinigameDelegate {
     public BlockHuntGamemodeDelegate() {
@@ -41,7 +45,13 @@ public class BlockHuntGamemodeDelegate extends BasicMinigameDelegate {
         FallingBlockMeta bb = (FallingBlockMeta) p.getEntityMeta();
         Block b = Block.fromStateId((short) e.getBlockStateId());
         bb.setBlock(b);
-        e.getPlayer().sendMessage(Component.text("You are now disguised as " + b.getName(), TextColor.color(0x82abba)));
+        Set<Player> viewers = new HashSet<>(p.getViewers());
+        viewers.forEach(p::removeViewer);
+        viewers.forEach(p::addViewer);
+        
+    
+        
+        e.getPlayer().sendMessage(Component.text("You are now disguised as " + ((FallingBlockMeta)p.getEntityMeta()).getBlock().getName(), TextColor.color(0x82abba)));
 
 
     }
