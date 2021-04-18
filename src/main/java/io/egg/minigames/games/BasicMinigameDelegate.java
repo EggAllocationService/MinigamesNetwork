@@ -1,13 +1,16 @@
 package io.egg.minigames.games;
 
 import io.egg.minigames.blocks.spawn.SpawnLocationManager;
+import io.egg.minigames.entities.MonsterBoatCreature;
 import io.egg.minigames.generators.VoidWorldGenerator;
 import io.egg.minigames.loading.WorldManager;
 import io.egg.minigames.profiles.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.utils.BlockPosition;
+import net.minestom.server.utils.Position;
 import net.minestom.server.world.biomes.Biome;
 
 public class BasicMinigameDelegate extends DefaultProfileDelegate {
@@ -23,6 +26,14 @@ public class BasicMinigameDelegate extends DefaultProfileDelegate {
         i.setChunkGenerator(new VoidWorldGenerator(Biome.PLAINS));
         defaultBar.name(Component.text("Waiting For Players", TextColor.color(0x341bad)));
         defaultBar.progress(0.0f);
+        EntityCreature chunkloader = new MonsterBoatCreature();
+        chunkloader.setInstance(i, new Position(0, 100, 0));
+        for (int x = -5; x <= 5; x++) {
+            for (int y = -5; y <= 5; y++) {
+                i.loadChunk(x, y);
+            }
+        }
+        
 
     }
 

@@ -111,7 +111,7 @@ public class OptionalBlock extends CustomBlock {
 
         }) ;
 
-        i.getChunkAt(p).sendPacketToViewers(pp);
+        if (i.getChunkAt(p) != null) i.getChunkAt(p).sendPacketToViewers(pp);
     }
     public static void tick() {
 
