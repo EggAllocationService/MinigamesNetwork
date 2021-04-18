@@ -17,7 +17,6 @@ import net.minestom.server.particle.Particle;
 import net.minestom.server.particle.ParticleCreator;
 import net.minestom.server.utils.BlockPosition;
 import net.minestom.server.utils.Position;
-import net.minestom.server.utils.binary.BinaryWriter;
 import net.minestom.server.utils.time.TimeUnit;
 import net.minestom.server.utils.time.UpdateOption;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +47,7 @@ public class OptionalBlock extends CustomBlock {
                     b = Block.AIR;
                 }
                 instance.setBlock(blockPosition, b);
+                
             }
         } catch (Exception e) {
             // not a valid htingy
