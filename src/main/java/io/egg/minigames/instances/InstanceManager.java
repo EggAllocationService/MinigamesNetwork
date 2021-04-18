@@ -93,7 +93,7 @@ public class InstanceManager {
         }
 
         p.sendMessage(Component.text("Sending you to ", TextColor.color(0x036bfc))
-            .append(Component.text(instanceName(target), TextColor.color(0x036bfc)))
+            .append(Component.text(instanceName(target), TextColor.color(0xfff133)))
         );
 
         p.setInstance(target, e.getJoinPos());

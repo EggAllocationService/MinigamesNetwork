@@ -22,7 +22,9 @@ public class DisguiseCommand extends Command {
         });
         var mode = ArgumentType.Enum("entity", EntityType.class)
                 .setFormat(ArgumentEnum.Format.LOWER_CASED);
+                
         //addSyntax(this::use, mode);
+        
     }
     private void use(CommandSender sender, CommandContext context) {
         EntityType e = context.get("entity");

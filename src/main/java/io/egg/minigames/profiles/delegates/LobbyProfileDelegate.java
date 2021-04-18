@@ -71,8 +71,7 @@ public class LobbyProfileDelegate extends DefaultProfileDelegate {
             Instance i = e.getPlayer().getInstance();
             SerializableData d = new SerializableDataImpl();
             d.set("interactions", 0);
-            BlockPosition target = e.getPosition().add(0, 1,0);
-
+            BlockPosition target = e.getPosition().add(0, 1, 0);
             i.setCustomBlock(target.getX(), target.getY(), target.getZ(), "keystone", d);
 
         } else if (e.getItemStack().getMaterial() == Material.WATER_BUCKET && e.getPlayer().getGameMode() == GameMode.CREATIVE) {
